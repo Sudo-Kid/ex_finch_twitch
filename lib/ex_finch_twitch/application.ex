@@ -1,10 +1,10 @@
 defmodule ExFinchTwitch.Application do
+  @doc false
   use Application
 
   def start(_type, _args) do
-    # Don't supervise Finch here
     children = [
-      {Finch, name: ExFinchTwitch.FinchAPIClient.FinchClient}
+      {Finch, name: ExFinchTwitch.FinchClient}
     ]
 
     opts = [strategy: :one_for_one, name: ExFinchTwitch.Supervisor]

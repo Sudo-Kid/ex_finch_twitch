@@ -8,6 +8,7 @@ defmodule ExFinchTwitch.ConfigTest do
 
   test "checks all configs", %{bypass: bypass} do
     assert Application.get_env(@app, :client_id) == "MY_TEST_CLIENT_KEY"
+    assert Application.get_env(@app, :client_secret) == "MY_TEST_CLIENT_SECRET"
     assert Application.get_env(@app, :token_url) == "http://localhost:#{bypass.port}"
     assert Application.get_env(@app, :api_url) == "http://localhost:#{bypass.port}"
   end

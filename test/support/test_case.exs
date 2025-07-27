@@ -1,8 +1,6 @@
 defmodule ExFinchTwitch.TestCase do
   use ExUnit.CaseTemplate
 
-  @app :ex_finch_twitch
-
   using do
     quote do
       use ExUnit.Case, async: true
