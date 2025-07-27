@@ -1,23 +1,27 @@
 # ExFinchTwitch
 
-This is a work in progress right now please DO NOT USE YET!
+A simple HTTP client for interacting with the Twitch API using Finch.
 
-**TODO: Add description**
+## Features
+
+- Plug-based HTTP client
+- Bypass support for mocking in tests
+- Configurable base URL and API key
 
 ## Installation
-
-If [available in Hex](https://hex.pm/docs/publish), the package can be installed
-by adding `ex_finch_twitch` to your list of dependencies in `mix.exs`:
 
 ```elixir
 def deps do
   [
-    {:ex_finch_twitch, "~> 0.1.0"}
+    {:ex_finch_twitch, "~> 0.0.1"}
   ]
 end
 ```
 
-Documentation can be generated with [ExDoc](https://github.com/elixir-lang/ex_doc)
-and published on [HexDocs](https://hexdocs.pm). Once published, the docs can
-be found at <https://hexdocs.pm/ex_finch_twitch>.
+## Config
 
+```
+config :my_library,
+  client_id: "MY_TEST_CLIENT_ID_KEY",
+  client_secret: "MY_TEST_CLIENT_SECRET"
+```

@@ -38,6 +38,7 @@ defmodule ExFinchTwitch.MixProject do
   defp deps do
     [
       {:finch, "~> 0.13"},
+      {:jason, "~> 1.4"},
       {:bypass, "~> 2.1", only: :test},
       {:ex_doc, "~> 0.34", only: :dev, runtime: false}
     ]

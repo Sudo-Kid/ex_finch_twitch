@@ -1,8 +1,5 @@
 defmodule ExFinchTwitch.HttpClientResponse do
-  @moduledoc """
-  Represents a Http Client Response
-  """
-
+  @moduledoc false
   @enforce_keys [:status_code, :headers, :body]
   defstruct [
     :status_code,
@@ -12,7 +9,7 @@ defmodule ExFinchTwitch.HttpClientResponse do
 
   @typedoc "An Http Client Response"
   @type t :: %__MODULE__{
-          status_code: Integer.t(),
+          status_code: pos_integer(),
           headers: %{optional(String.t()) => String.t()},
           body: String.t()
         }
