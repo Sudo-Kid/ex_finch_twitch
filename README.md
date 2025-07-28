@@ -4,7 +4,7 @@ A simple HTTP client for interacting with the Twitch API using Finch.
 
 ## Features
 
-- Plug-based HTTP client
+- Finch based Twitch wrapper
 - Bypass support for mocking in tests
 - Configurable base URL and API key
 

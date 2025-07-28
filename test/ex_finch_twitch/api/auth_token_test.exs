@@ -1,8 +1,14 @@
-defmodule ExFinchTwitch.API.ClientTokenTest do
+defmodule ExFinchTwitch.API.AuthTokenTest do
   use ExFinchTwitch.TestCase
 
   test "get_client_token performs successfully", %{bypass: bypass} do
     scopes = "RIP_MY_TEST"
+
+    expected_data = %{
+          access_token: "abcdefg1234567890abcdefghijklmnopqrstuv",
+          expires_in: 5_184_000,
+          token_type: "bearer"
+        }
 
     Bypass.expect_once(bypass, "POST", "/oauth2/token", fn conn ->
       {:ok, request_body, conn} = Plug.Conn.read_body(conn)
@@ -12,17 +18,12 @@ defmodule ExFinchTwitch.API.ClientTokenTest do
       assert request_body =~ "client_secret=#{ExFinchTwitch.Config.client_secret()}"
       assert request_body =~ "grant_type=client_credentials"
 
-      body =
-        Jason.encode!(%{
-          "access_token" => "abcdefg1234567890abcdefghijklmnopqrstuv",
-          "expires_in" => 5_184_000,
-          "token_type" => "bearer"
-        })
+      body = Jason.encode!(expected_data)
 
       Plug.Conn.resp(conn, 200, body)
     end)
 
-    ExFinchTwitch.get_client_token(scopes)
+    assert {:ok, expected_data} == ExFinchTwitch.get_client_token(scopes)
   end
 
   test "get_client_token fails with invalid client secret", %{bypass: bypass} do
@@ -77,5 +78,40 @@ defmodule ExFinchTwitch.API.ClientTokenTest do
     end)
 
     assert {:error, :too_many_requests} = ExFinchTwitch.get_client_token("scope1")
+  end
+
+  test "exchange_code performs successfully", %{bypass: bypass} do
+    redirect_uri = "MY_REDIRECT_URI"
+    code = "MY_CODE"
+    code_verifier = "MY_VERIFIER"
+
+    expected_data = %{
+          access_token: "rfx2uswqe8l4g1mkagrvg5tv0ks3",
+          expires_in: 14124,
+          refresh_token: "5b93chm6hdve3mycz05zfzatkfdenfspp1h1ar2xxdalen01",
+          scope: [
+            "channel:moderate",
+            "chat:edit",
+            "chat:read"
+          ],
+          token_type: "bearer"
+        }
+
+    Bypass.expect_once(bypass, "POST", "/oauth2/token", fn conn ->
+      {:ok, request_body, conn} = Plug.Conn.read_body(conn)
+
+      assert request_body =~ "client_id=#{ExFinchTwitch.Config.client_id()}"
+      assert request_body =~ "client_secret=#{ExFinchTwitch.Config.client_secret()}"
+      assert request_body =~ "code=#{code}"
+      assert request_body =~ "redirect_uri=#{redirect_uri}"
+      assert request_body =~ "code_verifier=#{code_verifier }"
+      assert request_body =~ "grant_type=authorization_code"
+
+      body = Jason.encode!(expected_data)
+
+      Plug.Conn.resp(conn, 200, body)
+    end)
+
+    assert {:ok, expected_data} == ExFinchTwitch.exchange_code(code, code_verifier, redirect_uri)
   end
 end

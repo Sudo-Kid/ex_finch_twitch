@@ -1,4 +1,5 @@
 defmodule ExFinchTwitch.API.Ads do
+  @moduledoc false
   alias ExFinchTwitch.FinchClient
 
   def start_commercial(token) do

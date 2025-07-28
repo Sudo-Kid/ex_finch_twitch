@@ -12,11 +12,11 @@ defmodule ExFinchTwitch.FinchClient do
       when status_code in 200..299 ->
         {:ok, Jason.decode!(body)}
 
-      %HttpClientResponse{status_code: 429 = status_code, headers: headers, body: _body} ->
+      %HttpClientResponse{status_code: 429, headers: headers, body: _body} ->
         ExFinchTwitch.Logger.process_fatal_log(%ExFinchTwitch.LoggerArguments{
           message: "Rate limit hit. Retrying in #{headers["ratelimit-reset"]} second",
           extra: %{
-            status_code: status_code,
+            status_code: 429,
             ratlimit_reset: headers["ratelimit-reset"],
             ratelimit: headers["ratelimit-limit"]
           },
@@ -25,11 +25,11 @@ defmodule ExFinchTwitch.FinchClient do
 
         {:error, :too_many_requests}
 
-      %HttpClientResponse{status_code: 415 = status_code, headers: _headers, body: body} ->
+      %HttpClientResponse{status_code: 415, headers: _headers, body: body} ->
         ExFinchTwitch.Logger.process_fatal_log(%ExFinchTwitch.LoggerArguments{
           message: "Unsupported media type",
           extra: %{
-            status_code: status_code,
+            status_code: 415,
             body: body
           },
           tags: %{module: "TwitchClient"}
@@ -38,7 +38,7 @@ defmodule ExFinchTwitch.FinchClient do
         {:error, :unsupported_media_type}
 
       %HttpClientResponse{status_code: status_code, headers: _headers, body: body}
-      when status_code in 400..499 ->
+      when status_code in 400..499 and not (status_code in [415, 429]) ->
         ExFinchTwitch.Logger.process_error_log(%ExFinchTwitch.LoggerArguments{
           message: "Bad request",
           extra: %{
@@ -122,7 +122,8 @@ defmodule ExFinchTwitch.FinchClient do
 
         {:error, :bad_request}
 
-      {:error, _reason} ->
+      {:error, reason} ->
+        IO.inspect(reason, label: "Request Failed")
         {:error, :request_failed}
     end
   end

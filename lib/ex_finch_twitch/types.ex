@@ -29,6 +29,35 @@ defmodule ExFinchTwitch.Types do
         }
 
   @typedoc """
+  Represents a Twitch OAuth2 user access token.
+
+  ## Fields
+
+    * `:access_token` - The OAuth2 bearer token granted to the user.
+    * `:expires_in` - The number of seconds until the token expires.
+    * `:refresh_token` - A token that can be used to obtain a new access token.
+    * `:scope` - A list of scopes granted with the token.
+    * `:token_type` - The type of token, usually `"bearer"`.
+
+  ## Example
+
+      %{
+        access_token: "user123token",
+        expires_in: 3600,
+        refresh_token: "refresh456token",
+        scope: ["user:read:email", "channel:read:subscriptions"],
+        token_type: "bearer"
+      }
+  """
+  @type user_token :: %{
+          access_token: String.t(),
+          expires_in: pos_integer(),
+          refresh_token: String.t(),
+          scope: [String.t()],
+          token_type: String.t()
+        }
+
+  @typedoc """
   Subscription status.
 
   Possible values:
@@ -120,7 +149,7 @@ defmodule ExFinchTwitch.Types do
   @typedoc """
   Query parameters allowed for fetching EventSub subscriptions.
   """
-  @type t :: %__MODULE__{
+  @type event_sub_query_parameters :: %{
           status: status() | nil,
           type: subscription_type() | nil,
           user_id: String.t() | nil,
@@ -128,14 +157,12 @@ defmodule ExFinchTwitch.Types do
           first: pos_integer() | nil
         }
 
-  defstruct status: nil, type: nil, user_id: nil, after: nil, first: nil
-
   @doc """
   Converts the struct into a keyword list suitable for URI encoding in an HTTP query.
 
   Converts atoms like `:enabled` into string form automatically.
   """
-  def to_query(%__MODULE__{} = params) do
+  def to_query(%{} = params) do
     params
     |> Map.from_struct()
     |> Enum.filter(fn {_k, v} -> v != nil end)
